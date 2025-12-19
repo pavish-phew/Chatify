@@ -1,0 +1,14 @@
+{
+    "name": "chat-app",
+    "version": "1.0.0",
+    "description": "MERN Chat Application",
+    "main": "backend/server.js",
+    "type": "module",
+    "scripts": {
+        "start": "npm run start --prefix backend",
+        "backend": "npm run dev --prefix backend",
+        "frontend": "npm run dev --prefix frontend",
+        "build": "npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend",
+        "render-build": "npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend"
+    }
+}
