@@ -29,6 +29,14 @@ const httpServer = createServer(app);
 // Security Middlewares
 app.use(helmet({
   crossOriginResourcePolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:", "http:"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+    },
+  },
 }));
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,

@@ -2,6 +2,14 @@ import User from '../models/User.model.js';
 import Chat from '../models/Chat.model.js';
 import Message from '../models/Message.model.js';
 
+// Helper to get the correct base URL for uploads
+const getBaseUrl = (req) => {
+  if (process.env.NODE_ENV === 'production' && process.env.CLIENT_URL) {
+    return process.env.CLIENT_URL;
+  }
+  return `${req.protocol}://${req.get('host')}`;
+};
+
 export const searchUsers = async (req, res) => {
   try {
     const query = req.query.q || req.query.query;
@@ -105,7 +113,7 @@ export const completeProfile = async (req, res) => {
     user.bio = bio || '';
 
     if (req.file) {
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const baseUrl = getBaseUrl(req);
       user.profilePicture = `${baseUrl}/uploads/${req.file.filename}`;
     } else if (profilePicture) {
       user.profilePicture = profilePicture;
@@ -146,7 +154,7 @@ export const updateProfile = async (req, res) => {
     if (bio !== undefined) user.bio = bio;
 
     if (req.file) {
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const baseUrl = getBaseUrl(req);
       user.profilePicture = `${baseUrl}/uploads/${req.file.filename}`;
     } else if (profilePicture) {
       user.profilePicture = profilePicture;
