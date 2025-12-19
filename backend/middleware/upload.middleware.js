@@ -1,22 +1,30 @@
 import multer from 'multer';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Memory storage for Cloudinary upload (profile pictures)
+const memoryStorage = multer.memoryStorage();
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = path.join(__dirname, '..', 'uploads');
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    },
-});
+// File filter for media messages (images and videos)
+const mediaFileFilter = (req, file, cb) => {
+    const allowedTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/jpg',
+        'image/webp',
+        'image/gif',
+        'video/mp4',
+        'video/quicktime',
+        'video/webm'
+    ];
 
-const fileFilter = (req, file, cb) => {
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only images (JPEG, PNG, JPG, WEBP, GIF) and videos (MP4, MOV, WEBM) are allowed'), false);
+    }
+};
+
+// File filter for profile pictures (images only)
+const imageFileFilter = (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
     if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
@@ -25,12 +33,23 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-const upload = multer({
-    storage: storage,
+// Upload for profile pictures (kept for backward compatibility)
+export const uploadProfilePicture = multer({
+    storage: memoryStorage,
     limits: {
         fileSize: 5 * 1024 * 1024, // 5MB limit
     },
-    fileFilter: fileFilter,
+    fileFilter: imageFileFilter,
 });
 
-export default upload;
+// Upload for chat media (images and videos)
+export const uploadMedia = multer({
+    storage: memoryStorage,
+    limits: {
+        fileSize: 50 * 1024 * 1024, // 50MB limit for videos
+    },
+    fileFilter: mediaFileFilter,
+});
+
+// Default export for backward compatibility
+export default uploadProfilePicture;

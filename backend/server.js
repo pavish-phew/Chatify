@@ -16,6 +16,7 @@ import userRoutes from './routes/user.routes.js';
 import chatRoutes from './routes/chat.routes.js';
 import messageRoutes from './routes/message.routes.js';
 import friendRequestRoutes from './routes/friendRequest.routes.js';
+import mediaRoutes from './routes/media.routes.js';
 import { initializeSocket } from './socket/socket.js';
 
 dotenv.config();
@@ -78,6 +79,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/friend-requests', friendRequestRoutes);
+app.use('/api/media', mediaRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK' });
@@ -105,7 +107,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/chat-app';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/chatify';
 
 mongoose
   .connect(MONGODB_URI)

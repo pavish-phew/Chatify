@@ -1,7 +1,7 @@
 {
-  "name": "chat-app-backend",
+  "name": "chatify-backend",
   "version": "1.0.0",
-  "description": "Backend for MERN Chat Application",
+  "description": "Backend for Chatify Application",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.8.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

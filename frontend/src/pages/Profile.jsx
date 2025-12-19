@@ -180,7 +180,11 @@ const Profile = () => {
                                 </div>
                                 <div className="p-4 rounded-3xl bg-card border border-border/50 space-y-1">
                                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Member Since</p>
-                                    <p className="text-sm font-semibold">{new Date(user?.createdAt).toLocaleDateString()}</p>
+                                    <p className="text-sm font-semibold">
+                                        {user?.createdAt
+                                            ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+                                            : 'Unknown'}
+                                    </p>
                                 </div>
                             </div>
                         </div>

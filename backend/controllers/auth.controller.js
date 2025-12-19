@@ -65,6 +65,7 @@ export const signup = async (req, res) => {
         isProfileComplete: user.isProfileComplete,
         isOnline: user.isOnline,
         lastSeen: user.lastSeen,
+        createdAt: user.createdAt,
       },
     });
   } catch (err) {
@@ -107,6 +108,7 @@ export const login = async (req, res) => {
         isProfileComplete: user.isProfileComplete,
         isOnline: user.isOnline,
         lastSeen: user.lastSeen,
+        createdAt: user.createdAt,
       },
     });
   } catch (err) {
@@ -180,6 +182,7 @@ export const getMe = async (req, res) => {
         isProfileComplete: user.isProfileComplete,
         isOnline: user.isOnline,
         lastSeen: user.lastSeen,
+        createdAt: user.createdAt,
       },
     });
   } catch (err) {

@@ -133,6 +133,7 @@ export const completeProfile = async (req, res) => {
         bio: user.bio,
         profilePicture: user.profilePicture,
         isProfileComplete: user.isProfileComplete,
+        createdAt: user.createdAt,
       }
     });
   } catch (err) {
@@ -172,6 +173,7 @@ export const updateProfile = async (req, res) => {
         bio: user.bio,
         profilePicture: user.profilePicture,
         isProfileComplete: user.isProfileComplete,
+        createdAt: user.createdAt,
       }
     });
   } catch (err) {

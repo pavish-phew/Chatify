@@ -160,13 +160,23 @@ const Sidebar = ({ isOpen, setIsOpen, selectedChat, setSelectedChat }) => {
         `}>
             {/* User Header */}
             <div className="h-[60px] px-4 flex items-center justify-between bg-[#f0f2f5] dark:bg-[#202c33] shrink-0">
-                <Link to="/profile" className="flex items-center gap-3">
-                    <img
-                        src={currentUser?.profilePicture || `https://ui-avatars.com/api/?name=${currentUser?.name || 'User'}&background=random`}
-                        alt=""
-                        className="w-[40px] h-[40px] rounded-full object-cover"
-                    />
-                </Link>
+                <div className="flex items-center gap-3">
+                    <Link to="/profile" className="flex items-center gap-2">
+                        <img
+                            src={currentUser?.profilePicture || `https://ui-avatars.com/api/?name=${currentUser?.name || 'User'}&background=random`}
+                            alt=""
+                            className="w-[40px] h-[40px] rounded-full object-cover"
+                        />
+                    </Link>
+                    <div className="flex items-center gap-2 border-l border-border pl-3">
+                        <img
+                            src="/assets/app-icon.png"
+                            alt="Chatify"
+                            className="w-8 h-8 rounded-lg object-cover"
+                        />
+                        <span className="font-semibold text-foreground text-sm hidden sm:block">Chatify</span>
+                    </div>
+                </div>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => navigate('/requests')}

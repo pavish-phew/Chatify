@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useSocket } from '../../context/SocketContext.jsx';
 import MessageItem from './MessageItem.jsx';
+import MediaPicker from './MediaPicker.jsx';
 import { HiChevronLeft, HiPhone, HiVideoCamera, HiDotsVertical, HiPlus, HiPaperAirplane, HiEmojiHappy } from 'react-icons/hi';
 import EmojiPicker from 'emoji-picker-react';
 import { useTheme } from '../../context/ThemeContext';
@@ -17,6 +18,7 @@ const ChatWindow = ({ chat, onBack }) => {
     const [isTyping, setIsTyping] = useState(false);
     const [otherUserTyping, setOtherUserTyping] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [showMediaPicker, setShowMediaPicker] = useState(false);
     const typingTimeoutRef = useRef(null);
     const messagesEndRef = useRef(null);
     const { theme } = useTheme();
@@ -343,7 +345,11 @@ const ChatWindow = ({ chat, onBack }) => {
                         >
                             <HiEmojiHappy className="w-6 h-6" />
                         </button>
-                        <button type="button" className="p-2 text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors">
+                        <button
+                            type="button"
+                            onClick={() => setShowMediaPicker(true)}
+                            className="p-2 text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors"
+                        >
                             <HiPlus className="w-6 h-6" />
                         </button>
                     </div>
@@ -370,6 +376,18 @@ const ChatWindow = ({ chat, onBack }) => {
                     </button>
                 </form>
             </footer>
+
+            {/* Media Picker Modal */}
+            {showMediaPicker && (
+                <MediaPicker
+                    chatId={chat._id}
+                    onMediaSent={(message) => {
+                        setMessages(prev => [...prev, message]);
+                        scrollToBottom();
+                    }}
+                    onClose={() => setShowMediaPicker(false)}
+                />
+            )}
         </div>
     );
 };

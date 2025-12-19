@@ -54,7 +54,7 @@ const Signup = () => {
             transition={{ delay: 0.3 }}
             className="text-4xl font-extrabold tracking-tight text-foreground"
           >
-            Create Account
+            Join Chatify
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 10 }}

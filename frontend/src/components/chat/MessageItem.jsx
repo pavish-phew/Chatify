@@ -18,36 +18,88 @@ const MessageItem = forwardRef(({ message, isOwn }, ref) => {
                 className={`
                     message-bubble relative group
                     ${isOwn ? 'message-sent' : 'message-received'}
+                    ${message.type !== 'text' ? 'p-1' : ''}
                 `}
             >
-                <div className="flex flex-wrap items-end gap-2 pr-12">
-                    <p className="text-[14.5px] leading-[1.45] whitespace-pre-wrap break-words py-0.5">
-                        {message.content}
-                    </p>
-                </div>
+                {/* Media Content */}
+                {message.type === 'image' && (
+                    <div className="mb-1">
+                        <img
+                            src={message.mediaUrl}
+                            alt="Shared image"
+                            className="rounded-lg max-w-[280px] w-full h-auto object-cover cursor-pointer hover:opacity-95 transition-opacity"
+                            onClick={() => window.open(message.mediaUrl, '_blank')}
+                        />
+                    </div>
+                )}
 
-                <div className="absolute bottom-1 right-1.5 flex items-center gap-1 min-w-[32px] justify-end">
-                    <span className={`text-[10px] ${isOwn ? 'text-foreground/50' : 'text-muted-foreground'} font-medium`}>
-                        {time}
-                    </span>
-                    {isOwn && (
-                        <div className="flex items-center -ml-0.5">
-                            {message.status === 'read' ? (
-                                <div className="flex -space-x-[11px]">
-                                    <HiCheck className="w-[15px] h-[15px] text-[#53bdeb]" />
-                                    <HiCheck className="w-[15px] h-[15px] text-[#53bdeb]" />
-                                </div>
-                            ) : message.status === 'delivered' ? (
-                                <div className="flex -space-x-[11px]">
-                                    <HiCheck className="w-[15px] h-[15px] text-muted-foreground/60" />
-                                    <HiCheck className="w-[15px] h-[15px] text-muted-foreground/60" />
-                                </div>
-                            ) : (
-                                <HiCheck className="w-[15px] h-[15px] text-muted-foreground/40" />
+                {message.type === 'video' && (
+                    <div className="mb-1">
+                        <video
+                            src={message.mediaUrl}
+                            controls
+                            className="rounded-lg max-w-[280px] w-full h-auto"
+                        />
+                    </div>
+                )}
+
+                {/* Text Content (caption or message) */}
+                {message.content && (
+                    <div className={`flex flex-wrap items-end gap-1 ${message.type !== 'text' ? 'px-2 pb-1' : ''}`}>
+                        <span className="text-[14.5px] leading-[19px] whitespace-pre-wrap break-words">
+                            {message.content}
+                        </span>
+                        {/* Timestamp area - flows inline with text */}
+                        <span className="flex items-center ml-1 mb-[-3px] float-right">
+                            <span className={`text-[11px] leading-[15px] ${isOwn ? 'text-[#667781] dark:text-[#8696a0]' : 'text-[#667781] dark:text-[#8696a0]'}`}>
+                                {time}
+                            </span>
+                            {isOwn && (
+                                <span className="inline-flex ml-[3px]">
+                                    {message.status === 'read' ? (
+                                        <>
+                                            <HiCheck className="w-[16px] h-[16px] text-[#53bdeb]" />
+                                            <HiCheck className="w-[16px] h-[16px] text-[#53bdeb] -ml-[9px]" />
+                                        </>
+                                    ) : message.status === 'delivered' ? (
+                                        <>
+                                            <HiCheck className="w-[16px] h-[16px] text-[#667781] dark:text-[#8696a0]" />
+                                            <HiCheck className="w-[16px] h-[16px] text-[#667781] dark:text-[#8696a0] -ml-[9px]" />
+                                        </>
+                                    ) : (
+                                        <HiCheck className="w-[16px] h-[16px] text-[#667781] dark:text-[#8696a0]" />
+                                    )}
+                                </span>
                             )}
-                        </div>
-                    )}
-                </div>
+                        </span>
+                    </div>
+                )}
+
+                {/* Timestamp for media-only messages */}
+                {!message.content && (
+                    <div className="absolute bottom-2 right-2 flex items-center bg-black/40 px-2 py-0.5 rounded">
+                        <span className="text-[11px] leading-[15px] text-white">
+                            {time}
+                        </span>
+                        {isOwn && (
+                            <span className="inline-flex ml-[3px]">
+                                {message.status === 'read' ? (
+                                    <>
+                                        <HiCheck className="w-[16px] h-[16px] text-[#53bdeb]" />
+                                        <HiCheck className="w-[16px] h-[16px] text-[#53bdeb] -ml-[9px]" />
+                                    </>
+                                ) : message.status === 'delivered' ? (
+                                    <>
+                                        <HiCheck className="w-[16px] h-[16px] text-white" />
+                                        <HiCheck className="w-[16px] h-[16px] text-white -ml-[9px]" />
+                                    </>
+                                ) : (
+                                    <HiCheck className="w-[16px] h-[16px] text-white" />
+                                )}
+                            </span>
+                        )}
+                    </div>
+                )}
             </div>
         </motion.div>
     );
