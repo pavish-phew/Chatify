@@ -1,7 +1,7 @@
 services:
   - type: web
     name: chatify-backend
-    env: node
+    runtime: node
     plan: free
     buildCommand: bash build.sh
     startCommand: npm start
@@ -10,17 +10,11 @@ services:
         value: production
       - key: PORT
         value: 5000
+      - key: CLIENT_URL
+        value: https://chatify-murex.onrender.com
       - key: MONGODB_URI
-        sync: false
+        fromContext: parameter
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
         generateValue: true
-      - key: CLIENT_URL
-        value: https://chatify-murex.onrender.com
-      - key: CLOUDINARY_CLOUD_NAME
-        sync: false
-      - key: CLOUDINARY_API_KEY
-        sync: false
-      - key: CLOUDINARY_API_SECRET
-        sync: false

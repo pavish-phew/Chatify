@@ -1,6 +1,18 @@
 import User from '../models/User.model.js';
 import Chat from '../models/Chat.model.js';
 import Message from '../models/Message.model.js';
+import cloudinary from '../config/cloudinary.js';
+
+// Helper to upload to Cloudinary
+const uploadToCloudinary = async (file) => {
+  const b64 = Buffer.from(file.buffer).toString('base64');
+  const dataURI = `data:${file.mimetype};base64,${b64}`;
+  const result = await cloudinary.uploader.upload(dataURI, {
+    folder: 'chatify-profiles',
+    resource_type: 'image',
+  });
+  return result.secure_url;
+};
 
 // Helper to get the correct base URL for uploads
 const getBaseUrl = (req) => {
@@ -113,8 +125,12 @@ export const completeProfile = async (req, res) => {
     user.bio = bio || '';
 
     if (req.file) {
-      const baseUrl = getBaseUrl(req);
-      user.profilePicture = `${baseUrl}/uploads/${req.file.filename}`;
+      try {
+        user.profilePicture = await uploadToCloudinary(req.file);
+      } catch (error) {
+        console.error('Cloudinary upload error:', error);
+        // Fallback to local if needed, but Cloudinary is expected in prod
+      }
     } else if (profilePicture) {
       user.profilePicture = profilePicture;
     }
@@ -155,8 +171,11 @@ export const updateProfile = async (req, res) => {
     if (bio !== undefined) user.bio = bio;
 
     if (req.file) {
-      const baseUrl = getBaseUrl(req);
-      user.profilePicture = `${baseUrl}/uploads/${req.file.filename}`;
+      try {
+        user.profilePicture = await uploadToCloudinary(req.file);
+      } catch (error) {
+        console.error('Cloudinary upload error:', error);
+      }
     } else if (profilePicture) {
       user.profilePicture = profilePicture;
     }
