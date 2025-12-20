@@ -5,6 +5,10 @@ import cloudinary from '../config/cloudinary.js';
 
 // Helper to upload to Cloudinary
 const uploadToCloudinary = async (file) => {
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY) {
+    throw new Error('Cloudinary is not configured. Please check environment variables.');
+  }
+
   const b64 = Buffer.from(file.buffer).toString('base64');
   const dataURI = `data:${file.mimetype};base64,${b64}`;
   const result = await cloudinary.uploader.upload(dataURI, {
@@ -145,7 +149,7 @@ export const completeProfile = async (req, res) => {
         user.profilePicture = await uploadToCloudinary(req.file);
       } catch (error) {
         console.error('Cloudinary upload error:', error);
-        // Fallback to local if needed, but Cloudinary is expected in prod
+        return res.status(500).json({ message: error.message || 'Image upload failed' });
       }
     } else if (profilePicture) {
       user.profilePicture = profilePicture;
@@ -191,6 +195,7 @@ export const updateProfile = async (req, res) => {
         user.profilePicture = await uploadToCloudinary(req.file);
       } catch (error) {
         console.error('Cloudinary upload error:', error);
+        return res.status(500).json({ message: error.message || 'Image upload failed' });
       }
     } else if (profilePicture) {
       user.profilePicture = profilePicture;
