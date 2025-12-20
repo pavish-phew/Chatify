@@ -10,8 +10,5 @@
         "frontend": "npm run dev --prefix frontend",
         "render-build": "bash build.sh",
         "build": "bash build.sh"
-    },
-    "dependencies": {
-        "cloudinary": "^2.8.0"
     }
 }
