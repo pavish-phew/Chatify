@@ -32,16 +32,17 @@ const Sidebar = ({ isOpen, setIsOpen, selectedChat, setSelectedChat }) => {
         });
 
         const handleGlobalNewMessage = ({ message }) => {
-            const chatId = message.chat?._id || message.chat;
+            const chatId = (message.chat?._id || message.chat)?.toString();
 
             setChats(prev => {
-                const chatIndex = prev.findIndex(c => c._id === chatId);
+                const chatIndex = prev.findIndex(c => c._id?.toString() === chatId);
 
                 if (chatIndex > -1) {
                     const existingChat = prev[chatIndex];
 
                     // Prevent duplicate updates for the same message
-                    if (existingChat.lastMessage?._id === message._id) return prev;
+                    if (existingChat.lastMessage?._id?.toString() === message._id?.toString()) return prev;
+
 
                     const updatedChats = [...prev];
                     const chatToUpdate = {

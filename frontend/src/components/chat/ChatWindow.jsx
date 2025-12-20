@@ -8,6 +8,8 @@ import MediaPicker from './MediaPicker.jsx';
 import { HiChevronLeft, HiPhone, HiVideoCamera, HiDotsVertical, HiPlus, HiPaperAirplane, HiEmojiHappy } from 'react-icons/hi';
 import EmojiPicker from 'emoji-picker-react';
 import { useTheme } from '../../context/ThemeContext';
+import toast from 'react-hot-toast';
+
 
 const ChatWindow = ({ chat, onBack }) => {
     const { user: currentUser } = useAuth();
@@ -38,45 +40,52 @@ const ChatWindow = ({ chat, onBack }) => {
 
             const handleNewMessage = ({ message }) => {
                 console.log(`[DEBUG] Received new-message:`, message);
-                const chatId = message.chat?._id || message.chat;
-                if (chatId === chat._id) {
+                const msgChatId = message.chat?._id?.toString() || message.chat?.toString();
+                const currentChatId = chat._id?.toString();
+
+                if (msgChatId === currentChatId) {
                     setMessages(prev => {
-                        // Prevent duplicates (especially with optimistic updates)
-                        const exists = prev.find(m =>
-                            (m._id && m._id === message._id) ||
-                            (m.clientId && m.clientId === message.clientId) ||
-                            (m.createdAt === message.createdAt && m.content === message.content)
+                        // Check if message already exists (by ID or clientId)
+                        const existingIndex = prev.findIndex(m =>
+                            (m._id && message._id && m._id === message._id) ||
+                            (m.clientId && message.clientId && m.clientId === message.clientId)
                         );
-                        if (exists) {
-                            console.log(`[DEBUG] Message already exists, skipping state update`);
-                            return prev;
+
+                        if (existingIndex > -1) {
+                            // Update existing message (replace optimistic with real)
+                            const updatedMessages = [...prev];
+                            updatedMessages[existingIndex] = message;
+                            return updatedMessages;
                         }
+
+                        // Add new message
                         return [...prev, message];
                     });
                 }
             };
 
-            const handleTyping = ({ chatId, userId }) => {
-                if (chatId === chat._id && userId === otherUser?._id) {
+            const handleTyping = ({ chatId: receivedChatId, userId: typingUserId }) => {
+                if (receivedChatId?.toString() === chat._id?.toString() && typingUserId?.toString() === otherUser?._id?.toString()) {
                     setOtherUserTyping(true);
                 }
             };
 
-            const handleStopTyping = ({ chatId, userId }) => {
-                if (chatId === chat._id && userId === otherUser?._id) {
+            const handleStopTyping = ({ chatId: receivedChatId, userId: typingUserId }) => {
+                if (receivedChatId?.toString() === chat._id?.toString() && typingUserId?.toString() === otherUser?._id?.toString()) {
                     setOtherUserTyping(false);
                 }
             };
 
-            const handleMessagesRead = ({ chatId, readerId }) => {
-                if (chatId === chat._id && readerId.toString() !== currentUser?._id?.toString()) {
+            const handleMessagesRead = ({ chatId: receivedChatId, readerId }) => {
+                if (receivedChatId?.toString() === chat._id?.toString() && readerId?.toString() !== currentUser?._id?.toString()) {
                     setMessages(prev => prev.map(m =>
-                        m.sender?._id?.toString() === currentUser?._id?.toString() || m.sender === currentUser?._id?.toString()
+                        (m.sender?._id?.toString() === currentUser?._id?.toString() || m.sender === currentUser?._id?.toString())
                             ? { ...m, status: 'read' }
                             : m
                     ));
                 }
             };
+
 
             const handleMessagesDelivered = ({ receiverId }) => {
                 setMessages(prev => prev.map(m =>
@@ -85,6 +94,13 @@ const ChatWindow = ({ chat, onBack }) => {
                         : m
                 ));
             };
+
+            // Remove existing listeners before adding new ones to avoid duplicates
+            socket.off('new-message', handleNewMessage);
+            socket.off('user-typing', handleTyping);
+            socket.off('user-stop-typing', handleStopTyping);
+            socket.off('messages-read', handleMessagesRead);
+            socket.off('messages-delivered', handleMessagesDelivered);
 
             socket.on('new-message', handleNewMessage);
             socket.on('user-typing', handleTyping);
@@ -96,6 +112,7 @@ const ChatWindow = ({ chat, onBack }) => {
             socket.emit('mark-as-read', { chatId: chat._id, senderId: otherUser?._id });
 
             return () => {
+                console.log(`[DEBUG] Leaving chat room: chat:${chat._id}`);
                 socket.emit('leave-chat', chat._id);
                 socket.off('new-message', handleNewMessage);
                 socket.off('user-typing', handleTyping);
@@ -105,6 +122,7 @@ const ChatWindow = ({ chat, onBack }) => {
             };
         }
     }, [chat._id, socket, otherUser?._id, currentUser?._id]);
+
 
     // Handle clicks outside emoji picker
     useEffect(() => {
