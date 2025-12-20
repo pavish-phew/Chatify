@@ -112,7 +112,12 @@ const Profile = () => {
                                 </div>
                                 <label className="absolute bottom-2 right-2 p-2.5 rounded-2xl bg-primary text-white shadow-lg shadow-primary/30 hover:scale-105 transition-transform cursor-pointer">
                                     <HiCamera className="w-5 h-5" />
-                                    <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        accept=".jpg,.jpeg,.png,.webp"
+                                        onChange={handleFileChange}
+                                    />
                                 </label>
                             </div>
 

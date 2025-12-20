@@ -84,10 +84,15 @@ const CompleteProfile = () => {
                         </div>
                         <label className="absolute bottom-[-4px] right-[-4px] w-10 h-10 bg-primary text-white rounded-2xl flex items-center justify-center cursor-pointer shadow-lg shadow-primary/30 hover:scale-110 transition-transform active:scale-95">
                             <HiCamera className="w-5 h-5" />
-                            <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                            <input
+                                type="file"
+                                className="hidden"
+                                accept=".jpg,.jpeg,.png,.webp"
+                                onChange={handleFileChange}
+                            />
                         </label>
                     </div>
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Finnish your profile</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Finish your profile</h1>
                     <p className="text-muted-foreground mt-2">Choose a unique username and tell us about yourself</p>
                 </div>
 

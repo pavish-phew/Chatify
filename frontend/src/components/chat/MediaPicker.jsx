@@ -114,7 +114,7 @@ const MediaPicker = ({ chatId, onMediaSent, onClose }) => {
                                 <input
                                     ref={fileInputRef}
                                     type="file"
-                                    accept="image/*,video/*"
+                                    accept=".jpg,.jpeg,.png,.webp,.gif,.mp4,.mov,.webm"
                                     onChange={handleFileSelect}
                                     className="hidden"
                                 />
