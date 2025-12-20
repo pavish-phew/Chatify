@@ -38,6 +38,19 @@ const setTokenCookies = (res, accessToken, refreshToken) => {
   });
 };
 
+// Helper to sanitize profile picture URLs
+const sanitizeUser = (user) => {
+  if (!user) return null;
+  const userObj = user.toObject ? user.toObject() : { ...user };
+
+  if (process.env.NODE_ENV === 'production' &&
+    userObj.profilePicture &&
+    userObj.profilePicture.includes('localhost')) {
+    userObj.profilePicture = null;
+  }
+  return userObj;
+};
+
 export const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -55,7 +68,7 @@ export const signup = async (req, res) => {
     setTokenCookies(res, accessToken, refreshToken);
 
     res.status(201).json({
-      user: {
+      user: sanitizeUser({
         _id: user._id,
         name: user.name,
         email: user.email,
@@ -66,7 +79,7 @@ export const signup = async (req, res) => {
         isOnline: user.isOnline,
         lastSeen: user.lastSeen,
         createdAt: user.createdAt,
-      },
+      }),
     });
   } catch (err) {
     console.error('Signup error:', err);
@@ -98,7 +111,7 @@ export const login = async (req, res) => {
     setTokenCookies(res, accessToken, refreshToken);
 
     res.json({
-      user: {
+      user: sanitizeUser({
         _id: user._id,
         name: user.name,
         email: user.email,
@@ -109,7 +122,7 @@ export const login = async (req, res) => {
         isOnline: user.isOnline,
         lastSeen: user.lastSeen,
         createdAt: user.createdAt,
-      },
+      }),
     });
   } catch (err) {
     console.error('Login error:', err);
@@ -172,7 +185,7 @@ export const getMe = async (req, res) => {
     }
 
     res.json({
-      user: {
+      user: sanitizeUser({
         _id: user._id,
         name: user.name,
         email: user.email,
@@ -183,7 +196,7 @@ export const getMe = async (req, res) => {
         isOnline: user.isOnline,
         lastSeen: user.lastSeen,
         createdAt: user.createdAt,
-      },
+      }),
     });
   } catch (err) {
     console.error('Get me error:', err);

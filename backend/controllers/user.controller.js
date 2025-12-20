@@ -22,6 +22,20 @@ const getBaseUrl = (req) => {
   return `${req.protocol}://${req.get('host')}`;
 };
 
+// Helper to sanitize profile picture URLs
+// Removes localhost URLs in production to trigger frontend fallbacks
+const sanitizeUser = (user) => {
+  if (!user) return null;
+  const userObj = user.toObject ? user.toObject() : { ...user };
+
+  if (process.env.NODE_ENV === 'production' &&
+    userObj.profilePicture &&
+    userObj.profilePicture.includes('localhost')) {
+    userObj.profilePicture = null;
+  }
+  return userObj;
+};
+
 export const searchUsers = async (req, res) => {
   try {
     const query = req.query.q || req.query.query;
@@ -37,7 +51,9 @@ export const searchUsers = async (req, res) => {
       isProfileComplete: true, // Only search users who finished signup
     }).select('username bio profilePicture _id isOnline lastSeen');
 
-    res.json({ users });
+    const sanitizedUsers = users.map(user => sanitizeUser(user));
+
+    res.json({ users: sanitizedUsers });
   } catch (err) {
     console.error('Search users error:', err);
     res.status(500).json({ message: 'Server error' });
@@ -64,7 +80,7 @@ export const getUserChats = async (req, res) => {
 
       return {
         _id: chat._id,
-        participants: chat.participants,
+        participants: chat.participants.map(p => sanitizeUser(p)),
         lastMessage: chat.lastMessage,
         lastMessageAt: chat.lastMessageAt,
         unreadCount,
@@ -89,7 +105,7 @@ export const getUserById = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json({ user });
+    res.json({ user: sanitizeUser(user) });
   } catch (err) {
     console.error('Get user error:', err);
     res.status(500).json({ message: 'Server error' });
@@ -141,7 +157,7 @@ export const completeProfile = async (req, res) => {
 
     res.json({
       message: 'Profile completed successfully',
-      user: {
+      user: sanitizeUser({
         _id: user._id,
         name: user.name,
         email: user.email,
@@ -150,7 +166,7 @@ export const completeProfile = async (req, res) => {
         profilePicture: user.profilePicture,
         isProfileComplete: user.isProfileComplete,
         createdAt: user.createdAt,
-      }
+      })
     });
   } catch (err) {
     console.error('Complete profile error:', err);
@@ -184,7 +200,7 @@ export const updateProfile = async (req, res) => {
 
     res.json({
       message: 'Profile updated successfully',
-      user: {
+      user: sanitizeUser({
         _id: user._id,
         name: user.name,
         email: user.email,
@@ -193,7 +209,7 @@ export const updateProfile = async (req, res) => {
         profilePicture: user.profilePicture,
         isProfileComplete: user.isProfileComplete,
         createdAt: user.createdAt,
-      }
+      })
     });
   } catch (err) {
     console.error('Update profile error:', err);
